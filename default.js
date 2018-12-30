@@ -1,5 +1,9 @@
 const headerStyle = `style='margin-bottom:20px'`;
-const bqStyle = `style='font-size:8px;margin-inline-start:20px;margin-block-start:0em;margin-block-end:0em'`;
+const bqStyle = `style='font-size:8px;
+                font-style:italic;
+                margin-inline-start:20px;
+                margin-block-start:0em;
+                margin-block-end:0em'`;
 const h6Style = `style='font-size:9px;margin:0;padding:0'`;
 
 const defaultHTML = `
@@ -7,7 +11,7 @@ const defaultHTML = `
     <h1 style="font-size:10pt"> 
         What would you like to do? 
     </h1>
-    <span style="font-size:5pt">
+    <span style="font-size:6pt">
         replace all [...] with content of your choice.
     </span>
 </header>

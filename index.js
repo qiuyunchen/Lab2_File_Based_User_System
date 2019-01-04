@@ -73,15 +73,28 @@ app.get('/class/add', (req, res)=>{
 app.get('/class/list', (req, res) =>{
     fs.readFile(`./classes/${req.query.class}.json`, 'utf8', (err, data) =>{
         if (err) {
-            res.send( 'No such class in the database!' );
+            const error = {error:`'Class ${req.query.class} doesn't exist lol.'`}
+            res.send( displayObj(error) );
         } else {
             res.send( displayObj(JSON.parse(data)) );
         } 
     });
 });
 
-// // -------- path: list failing students
-// app.get();
+// -------- path: list failing students
+app.get('/class/listfailing', (req, res) =>{
+    fs.readFile(`./classes/${req.query.class}.json`, 'utf8', (err, data) =>{
+        if (err) {
+            const error = {error: `'Class ${req.query.class} doesn't exist lol'`}
+            res.send( displayObj(error) );
+        } else {
+            const clas = JSON.parse(data);
+            const failers = clas.students.filter(s => s.grade < 50);
+            const result = {students: failers};
+            res.send( displayObj(result) );
+        } 
+    });
+});
 
 // // -------- path: list students from a specific city
 // app.get();

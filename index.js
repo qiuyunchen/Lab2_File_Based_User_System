@@ -45,16 +45,17 @@ app.get('/class/add', (req, res)=>{
                 const thisClass = JSON.parse(data);
                 // check for existing student
                 const existingStud = thisClass.students.filter( s => s.name === success.added.name);
+                console.log('existing student:', existingStud)
                 if (existingStud.length === 0){
                     thisClass.students.push(success.added);
                 } else {
-                    thisClass.students.map(s => {
-                        if (s.name = success.added.name){
+                    thisClass.students.forEach( s => {
+                        if (s.name === success.added.name) {
                             s.age = success.added.age;
                             s.city = success.added.city;
                             s.grade = success.added.grade;
                         }
-                    })
+                    });
                 }
                 // update file
                 fs.writeFile(`./classes/${className}.json`, JSON.stringify(thisClass), err =>{

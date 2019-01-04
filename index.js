@@ -45,7 +45,6 @@ app.get('/class/add', (req, res)=>{
                 const thisClass = JSON.parse(data);
                 // check for existing student
                 const existingStud = thisClass.students.filter( s => s.name === success.added.name);
-                console.log('existing student:', existingStud)
                 if (existingStud.length === 0){
                     thisClass.students.push(success.added);
                 } else {
@@ -70,8 +69,16 @@ app.get('/class/add', (req, res)=>{
     });
 });
 
-// // -------- path: list all students in a class
-// app.get();
+// -------- path: list all students in a class
+app.get('/class/list', (req, res) =>{
+    fs.readFile(`./classes/${req.query.class}.json`, 'utf8', (err, data) =>{
+        if (err) {
+            res.send( 'No such class in the database!' );
+        } else {
+            res.send( displayObj(JSON.parse(data)) );
+        } 
+    });
+});
 
 // // -------- path: list failing students
 // app.get();

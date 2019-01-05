@@ -4,13 +4,18 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-// -------- path: default path
+// -------- path: default paths
 app.get('/', (req, res)=>{
     const {defaultHTML} = require('./services/default');
     res.send(defaultHTML);
 });
 
-// // -------- path: adding students to a class
+app.get('/class', (req, res)=>{
+    const {defaultHTML} = require('./services/default');
+    res.send(defaultHTML);
+});
+
+// -------- path: adding students to a class
 app.get('/class/add', (req, res)=>{
     const className = req.query.class;
     const arrOfReqdKeys = ['name','age','city','grade'];
@@ -20,19 +25,20 @@ app.get('/class/add', (req, res)=>{
         if (req.query[key]){
             success.added[key] = req.query[key];
         } else {
-            error.error = 'Please fill out all the information for the student';
+            error.error = `#Please fill out all the information for the student#`;
         }
     });
 
     fs.readFile(`./classes/${className}.json`, 'utf8', (err, data)=>{
-        if (err) { // need to create new class and save student to new class
+        if (err) { // need to create new class and save student to class
             if (error.error) {
                 res.send( displayObj(error) );
             } else {
                 const thisClass = {students:[success.added]};
                 fs.writeFile(`./classes/${className}.json`, JSON.stringify(thisClass), (err) =>{
                     if(err) {
-                        res.send('something went wrong and the student could not be added');
+                        error.error = '#something went wrong and the student could not be added#';
+                        res.send( displayObj(error) );
                     } else {
                         res.send( displayObj(success) );
                     }
@@ -56,10 +62,11 @@ app.get('/class/add', (req, res)=>{
                         }
                     });
                 }
-                // update file
+                // update class
                 fs.writeFile(`./classes/${className}.json`, JSON.stringify(thisClass), err =>{
                     if(err) {
-                        res.send('something went wrong and the student could not be added');
+                        error.error = `#something went wrong and the student could not be added#`;
+                        res.send( displayObj(error) );
                     } else {
                         res.send( displayObj(success) );
                     }
@@ -73,7 +80,7 @@ app.get('/class/add', (req, res)=>{
 app.get('/class/list', (req, res) =>{
     fs.readFile(`./classes/${req.query.class}.json`, 'utf8', (err, data) =>{
         if (err) {
-            const error = {error:`'Class ${req.query.class} doesn't exist lol.'`}
+            const error = {error:`#${req.query.class} class doesn't exist lol#`}
             res.send( displayObj(error) );
         } else {
             res.send( displayObj(JSON.parse(data)) );
@@ -85,7 +92,7 @@ app.get('/class/list', (req, res) =>{
 app.get('/class/listfailing', (req, res) =>{
     fs.readFile(`./classes/${req.query.class}.json`, 'utf8', (err, data) =>{
         if (err) {
-            const error = {error: `'Class ${req.query.class} doesn't exist lol.'`}
+            const error = {error: `#${req.query.class} class doesn't exist lol#`}
             res.send( displayObj(error) );
         } else {
             const clas = JSON.parse(data);
@@ -100,13 +107,18 @@ app.get('/class/listfailing', (req, res) =>{
 app.get('/class/listfromcity', (req, res) =>{
     fs.readFile(`./classes/${req.query.class}.json`, 'utf8', (err, data) =>{
         if (err) {
-            const error = {error: `'Class ${req.query.class} doesn't exist lol.'`}
+            const error = {error: `#${req.query.class} class doesn't exist lol#`}
             res.send( displayObj(error) );
         } else {
-            const clas = JSON.parse(data);
-            const arr = clas.students.filter(s => s.city.toLowerCase() === req.query.city.toLowerCase());
-            const result = {students: arr};
-            res.send( displayObj(result) );
+            if (req.query.city) {
+                const clas = JSON.parse(data);
+                const arr = clas.students.filter(s => s.city.toLowerCase() === req.query.city.toLowerCase());
+                const result = {students: arr};
+                res.send( displayObj(result) );
+            } else {
+                const error = {error: `#You didn't pass in the city that you want to search.#`}
+                res.send( displayObj(error) );
+            }
         }
     });
 });
